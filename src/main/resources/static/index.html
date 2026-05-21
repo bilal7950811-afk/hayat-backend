@@ -1938,7 +1938,7 @@
   const btn = e.target.querySelector('button[type="submit"]');
   if (btn) { btn.disabled = true; btn.textContent = 'Logging in…'; }
   try {
-    const res = await fetch(`${API_BASE}/admin/login`, { // 💡 Uses API_BASE
+    const res = await fetch(`/api/admin/login`, { // 💡 Uses API_BASE
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ password })
