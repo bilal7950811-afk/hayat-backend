@@ -1,19 +1,15 @@
-package com.hayat.backend.config;
+package com.hayat.backend.config; // ⚠️ Notice the ".config" at the end!
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // Allow all paths
-                .allowedOrigins("*") // Allow all origins
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow these methods
-                .allowedHeaders("*"); // Allow all headers
+    public void addViewControllers(ViewControllerRegistry registry) {
+        // This ensures anyone landing on your root URL gets seamlessly sent to your index.html page
+        registry.addViewController("/").setViewName("forward:/index.html");
     }
 }
