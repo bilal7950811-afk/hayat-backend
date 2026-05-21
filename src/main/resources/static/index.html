@@ -1950,7 +1950,7 @@
     }
     const data = await res.json();
     sessionStorage.setItem(AUTH_KEY, data.token);  // store token, not 'true'
-    initAdminPage();
+    showPage('admin');
   } catch (err) {
     showToast('Login failed', 'Could not reach server. Is it running?', true);
   } finally {
