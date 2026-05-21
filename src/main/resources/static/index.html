@@ -2390,12 +2390,12 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
 
   try {
     // 2. Send the password to the backend for verification
-    const res = await fetch(`${API_BASE}/admin/login`, {
+    const res = await fetch(`/api/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: password }) // Send it to your Java code
     });
-
+    
     if (res.ok) {
       // 3. Only if the backend says YES, grant access
       sessionStorage.setItem('admin_auth', 'true');
