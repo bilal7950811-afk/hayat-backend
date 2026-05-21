@@ -2004,7 +2004,7 @@
     async function fetchAllDonors() {
   try {
     // Fixed: Pulls directly from your AdminController route
-    const res = await fetch('http://localhost:8081/api/admin/donors');
+    const res = await fetch('/api/admin/donors');
     if (!res.ok) throw new Error('Server returned ' + res.status);
     const data = await res.json();
     _donorsCache = Array.isArray(data) ? data : [];
@@ -2019,7 +2019,7 @@
 async function fetchAllAcceptors() {
   try {
     // Fixed: Pulls directly from your AdminController route
-    const res = await fetch('http://localhost:8081/api/admin/acceptors');
+    const res = await fetch('/api/admin/acceptors');
     if (!res.ok) throw new Error('Server returned ' + res.status);
     const data = await res.json();
     _acceptorsCache = Array.isArray(data) ? data : [];
@@ -2413,7 +2413,7 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
 
     async function adminLogout() {
   try {
-    await fetch('http://localhost:8081/api/admin/logout', {
+    await fetch('/api/admin/logout', {
       method: 'POST',
       headers: { 'X-Admin-Token': adminToken() }
     });
@@ -2583,7 +2583,7 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
     async function updateDonorStatus(id, status) {
   try {
     // Fixed: Changed base URL to /api/admin, method to PUT, and passed status as a query parameter
-    const res = await fetch(`http://localhost:8081/api/admin/donors/${id}/status?status=${status}`, {
+    const res = await fetch(`/api/admin/donors/${id}/status?status=${status}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -2603,7 +2603,7 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
 async function updateAcceptorStatus(id, status) {
   try {
     // Fixed: Changed base URL to /api/admin, method to PUT, and passed status as a query parameter
-    const res = await fetch(`http://localhost:8081/api/admin/acceptors/${id}/status?status=${status}`, {
+    const res = await fetch(`/api/admin/acceptors/${id}/status?status=${status}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
