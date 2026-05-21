@@ -1978,7 +1978,7 @@
     async function fetchDonors(bloodGroup, city) { // Assuming these are your search parameters
     try {
         // 💡 CRITICAL: Ensure you construct the URL using your API_BASE
-        const url = `${API_BASE}/search-donors?bloodGroup=${encodeURIComponent(bloodGroup)}&city=${encodeURIComponent(city)}`;
+        const url = `/api/search-donors?bloodGroup=${encodeURIComponent(bloodGroup)}&city=${encodeURIComponent(city)}`;
 
         const res = await fetch(url);
 
@@ -1992,7 +1992,7 @@
 
     } catch (err) {
         console.error('[Hayat] fetchDonors failed:', err);
-        showToast('Server unreachable', 'Could not load donors. Is the Spring Boot server running on port 8081?', true);
+        showToast('Server unreachable', 'Could not load donors. Try refreshing', true);
         return _donorsCache;
     }
 }
