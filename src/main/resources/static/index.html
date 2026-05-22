@@ -2384,30 +2384,44 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
 
   // 1. Find the button safely
   const btn = e.target.querySelector('button[type="submit"]');
-  if (btn) btn.disabled = true;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Logging in…';
+  }
 
-  const password = document.getElementById('adminPass').value;
+  // Added .trim() to prevent accidental spaces from keyboard autocomplete
+  const password = document.getElementById('adminPass').value.trim();
 
   try {
     // 2. Send the password to the backend for verification
     const res = await fetch(`${API_BASE}/api/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: password }) // Send it to your Java code
+      body: JSON.stringify({ password: password }) 
     });
     
     if (res.ok) {
-      // 3. Only if the backend says YES, grant access
-      sessionStorage.setItem('admin_auth', 'true');
-      initAdminPage();
+      // 🚨 FIX 1: Read the JSON response data sent by your Java controller
+      const data = await res.json(); 
+      
+      // 🚨 FIX 2: Store the actual hex token using your AUTH_KEY variable
+      sessionStorage.setItem(AUTH_KEY, data.token); 
+      
+      // 🚨 FIX 3: Change the screen view to display the admin layout panel
+      showPage('admin');
+      
     } else {
       showToast('Invalid password', 'The password you entered is incorrect.', true);
       document.getElementById('adminPass').value = '';
     }
   } catch (err) {
+    console.error('[Hayat Login Error]:', err);
     showToast('Login failed', 'Could not reach server.', true);
   } finally {
-    if (btn) btn.disabled = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Login';
+    }
   }
 }
 
