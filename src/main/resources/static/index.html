@@ -2397,23 +2397,18 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
     });
     
     if (res.ok) {
-    // 2. FIXED: Parse the incoming JSON response to extract your backend token
-    const data = await res.json();
-    
-    // 3. FIXED: Store the actual token string sent back by your Java controller
-    sessionStorage.setItem('admin_auth', data.token); 
-    
-    // 4. FIXED: Change the screen view to display your admin layout panel
-    showPage('admin');
-  } else {
-    showToast('Invalid password', 'The password you entered is incorrect.', true);
-    document.getElementById('adminPass').value = '';
+      // 3. Only if the backend says YES, grant access
+      sessionStorage.setItem('admin_auth', 'true');
+      initAdminPage();
+    } else {
+      showToast('Invalid password', 'The password you entered is incorrect.', true);
+      document.getElementById('adminPass').value = '';
+    }
+  } catch (err) {
+    showToast('Login failed', 'Could not reach server.', true);
+  } finally {
+    if (btn) btn.disabled = false;
   }
-} catch (err) {
-  console.error('[Hayat Login Error]:', err);
-  showToast('Login failed', 'Could not reach server. Is it running?', true);
-} finally {
-  if (btn) { btn.disabled = false; btn.textContent = 'Login'; }
 }
 
     async function adminLogout() {
