@@ -2388,18 +2388,15 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
 
   const password = document.getElementById('adminPass').value;
 
- try {
-  const btn = e.target.querySelector('button[type="submit"]');
-  if (btn) { btn.disabled = true; btn.textContent = 'Logging in…'; }
-
-  // 1. FIXED: Added API_BASE so it targets your live Java cloud server
-  const res = await fetch(`${API_BASE}/api/admin/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: password.trim() }) // Added .trim() to stop space typos
-  });
-  
-  if (res.ok) {
+  try {
+    // 2. Send the password to the backend for verification
+    const res = await fetch(`${API_BASE}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password }) // Send it to your Java code
+    });
+    
+    if (res.ok) {
     // 2. FIXED: Parse the incoming JSON response to extract your backend token
     const data = await res.json();
     
