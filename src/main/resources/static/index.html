@@ -2596,18 +2596,27 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
 
     async function updateDonorStatus(id, status) {
   try {
-    // Fixed: Changed base URL to /api/admin, method to PUT, and passed status as a query parameter
-    const res = await fetch(`/api/admin/donors/${id}/status?status=${status}`, {
+    // 1. FIXED: Added ${API_BASE} and removed the query parameters from the URL string
+    const res = await fetch(`${API_BASE}/api/admin/donors/${id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'X-Admin-Token': adminToken()
-      }
+        // 2. FIXED: Aligned authentication header with your AUTH_KEY storage tracker
+        'Authorization': `Bearer ${sessionStorage.getItem(AUTH_KEY)}`
+      },
+      // 3. FIXED: Wrapped status in a JSON body payload exactly like your Java controller expects!
+      body: JSON.stringify({ status: status })
     });
+
     if (!res.ok) throw new Error('Server returned ' + res.status);
+
+    // Bonus UI Polish: Update the local cache state so your UI switches instantly
     const d = _donorsCache.find(x => x.id === id);
+    if (d) d.status = status; 
+    
     showToast('Status updated', 'Donor ' + (d ? d.name : id) + ' → ' + status);
-    renderAdminDashboard();
+    renderAdminDashboard(); // Refresh the table grids
+    
   } catch (err) {
     console.error('[Hayat] updateDonorStatus failed:', err);
     showToast('Update failed', 'Could not update donor status. Check server connection.', true);
@@ -2616,17 +2625,29 @@ function adminToken() { return sessionStorage.getItem(AUTH_KEY) || ''; }
 
 async function updateAcceptorStatus(id, status) {
   try {
-    // Fixed: Changed base URL to /api/admin, method to PUT, and passed status as a query parameter
-    const res = await fetch(`/api/admin/acceptors/${id}/status?status=${status}`, {
+    // 1. FIXED: Added ${API_BASE} and removed the query parameters from the URL string
+    const res = await fetch(`${API_BASE}/api/admin/acceptors/${id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'X-Admin-Token': adminToken()
-      }
+        // 2. FIXED: Aligned authentication header with your AUTH_KEY storage tracker
+        'Authorization': `Bearer ${sessionStorage.getItem(AUTH_KEY)}`
+      },
+      // 3. FIXED: Sent status inside a JSON body payload exactly like your Java controller expects!
+      body: JSON.stringify({ status: status })
     });
+
     if (!res.ok) throw new Error('Server returned ' + res.status);
+
+    // Optional UI Polish: Update your local cache state (if you maintain one for acceptors)
+    if (typeof _acceptorsCache !== 'undefined') {
+      const a = _acceptorsCache.find(x => x.id === id);
+      if (a) a.status = status;
+    }
+
     showToast('Status updated', 'Request → ' + status);
-    renderAdminDashboard();
+    renderAdminDashboard(); // Refresh the data grid grids instantly
+    
   } catch (err) {
     console.error('[Hayat] updateAcceptorStatus failed:', err);
     showToast('Update failed', 'Could not update request status. Check server connection.', true);
@@ -2634,30 +2655,52 @@ async function updateAcceptorStatus(id, status) {
 }
 
     async function deleteDonor(id) {
-      if (!confirm('Permanently delete this donor record? This cannot be undone.')) return;
-      try {
-        const res = await fetch(API_BASE + '/api/donors/' + id, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Server returned ' + res.status);
-        showToast('Deleted', 'Donor record removed');
-        renderAdminDashboard();
-      } catch (err) {
-        console.error('[Hayat] deleteDonor failed:', err);
-        showToast('Delete failed', 'Could not delete donor. Check server connection.', true);
+  if (!confirm('Permanently delete this donor record? This cannot be undone.')) return;
+  
+  try {
+    // 1. FIXED: Adjusted URL path to use /api/admin/ and switched to template literals
+    const res = await fetch(`${API_BASE}/api/admin/donors/${id}`, { 
+      method: 'DELETE',
+      // 2. FIXED: Added the Authorization header to verify your admin privileges
+      headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem(AUTH_KEY)}`
       }
-    }
+    });
+    
+    if (!res.ok) throw new Error('Server returned ' + res.status);
+    
+    showToast('Deleted', 'Donor record removed');
+    renderAdminDashboard(); // Refresh the table lists automatically
+    
+  } catch (err) {
+    console.error('[Hayat] deleteDonor failed:', err);
+    showToast('Delete failed', 'Could not delete donor. Check server connection.', true);
+  }
+}
 
     async function deleteAcceptor(id) {
-      if (!confirm('Permanently delete this request? This cannot be undone.')) return;
-      try {
-        const res = await fetch(API_BASE + '/api/blood-requests/' + id, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Server returned ' + res.status);
-        showToast('Deleted', 'Request removed');
-        renderAdminDashboard();
-      } catch (err) {
-        console.error('[Hayat] deleteAcceptor failed:', err);
-        showToast('Delete failed', 'Could not delete request. Check server connection.', true);
+  if (!confirm('Permanently delete this request? This cannot be undone.')) return;
+  
+  try {
+    // 1. FIXED: Adjusted URL path to use /api/admin/acceptors/ and template literals
+    const res = await fetch(`${API_BASE}/api/admin/acceptors/${id}`, { 
+      method: 'DELETE',
+      // 2. FIXED: Added the Authorization header to verify your admin token
+      headers: {
+        'Authorization': `Bearer ${sessionStorage.getItem(AUTH_KEY)}`
       }
-    }
+    });
+    
+    if (!res.ok) throw new Error('Server returned ' + res.status);
+    
+    showToast('Deleted', 'Request removed');
+    renderAdminDashboard(); // Refresh the table lists automatically
+    
+  } catch (err) {
+    console.error('[Hayat] deleteAcceptor failed:', err);
+    showToast('Delete failed', 'Could not delete request. Check server connection.', true);
+  }
+}
 
     /* ---------- CSV / Excel Export ---------- */
     function toCSV(rows, headers) {
