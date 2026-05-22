@@ -2151,7 +2151,7 @@ async function fetchAllAcceptors() {
   if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
 
   try {
-    const res = await fetch(API_BASE + '/register-donor', {
+    const res = await fetch(API_BASE + '/api/register-donor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(donor)
@@ -2233,7 +2233,7 @@ async function fetchAllAcceptors() {
   if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
 
   try {
-    const res = await fetch(API_BASE + '/request-blood', {
+    const res = await fetch(API_BASE + '/api/request-blood', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(acceptor)
@@ -2622,7 +2622,7 @@ async function updateAcceptorStatus(id, status) {
     async function deleteDonor(id) {
       if (!confirm('Permanently delete this donor record? This cannot be undone.')) return;
       try {
-        const res = await fetch(API_BASE + '/donors/' + id, { method: 'DELETE' });
+        const res = await fetch(API_BASE + '/api/donors/' + id, { method: 'DELETE' });
         if (!res.ok) throw new Error('Server returned ' + res.status);
         showToast('Deleted', 'Donor record removed');
         renderAdminDashboard();
@@ -2635,7 +2635,7 @@ async function updateAcceptorStatus(id, status) {
     async function deleteAcceptor(id) {
       if (!confirm('Permanently delete this request? This cannot be undone.')) return;
       try {
-        const res = await fetch(API_BASE + '/blood-requests/' + id, { method: 'DELETE' });
+        const res = await fetch(API_BASE + '/api/blood-requests/' + id, { method: 'DELETE' });
         if (!res.ok) throw new Error('Server returned ' + res.status);
         showToast('Deleted', 'Request removed');
         renderAdminDashboard();
@@ -2709,8 +2709,8 @@ async function updateAcceptorStatus(id, status) {
       if (confirmation !== 'DELETE') return;
       try {
         const [r1, r2] = await Promise.all([
-          fetch(API_BASE + '/donors',       { method: 'DELETE' }),
-          fetch(API_BASE + '/blood-requests', { method: 'DELETE' })
+          fetch(API_BASE + '/api/donors',       { method: 'DELETE' }),
+          fetch(API_BASE + '/api/blood-requests', { method: 'DELETE' })
         ]);
         if (!r1.ok || !r2.ok) throw new Error('One or more delete calls failed');
         _donorsCache = [];
@@ -2743,8 +2743,8 @@ async function updateAcceptorStatus(id, status) {
 
       showToast('Seeding…', 'Sending demo data to server, please wait.');
       try {
-        const donorResults  = await Promise.allSettled(demoDonors.map(d  => fetch(API_BASE + '/register-donor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) })));
-        const acceptorResults = await Promise.allSettled(demoAcceptors.map(a => fetch(API_BASE + '/request-blood',  { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(a) })));
+        const donorResults  = await Promise.allSettled(demoDonors.map(d  => fetch(API_BASE + '/api/register-donor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) })));
+        const acceptorResults = await Promise.allSettled(demoAcceptors.map(a => fetch(API_BASE + '/api/request-blood',  { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(a) })));
         const donorOk    = donorResults.filter(r => r.status === 'fulfilled' && r.value.ok).length;
         const acceptorOk = acceptorResults.filter(r => r.status === 'fulfilled' && r.value.ok).length;
         showToast('Demo data added', donorOk + ' donors + ' + acceptorOk + ' requests sent to server. Perfect for your presentation!');
